@@ -2339,8 +2339,10 @@ fn key_intent(key: &str, mods: gpui::Modifiers) -> Key {
         "right" if bare => Key::ToColumn(Column::Right),
         // Tab keeps working with Ctrl held — that is the Ctrl+Tab gesture still
         // in progress. Off macOS that chord arrives as the NextTab action
-        // instead, which lands in the same place.
-        "tab" if !mods.secondary() => Key::Tab(!mods.shift),
+        // instead, which lands in the same place. The guard rejects only the
+        // platform key (Cmd / Win): `secondary()` would swallow Ctrl+Tab off
+        // macOS, where Ctrl *is* the secondary modifier.
+        "tab" if !mods.platform => Key::Tab(!mods.shift),
         "enter" if bare || mods.secondary() => Key::Confirm(mods.secondary()),
         _ => Key::Pass,
     }
