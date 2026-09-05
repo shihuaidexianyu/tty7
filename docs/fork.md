@@ -19,6 +19,8 @@
 客户端更新 API、发布页、远端 `tty7-server` 和 `checksums.txt` 下载地址，以及 Windows 安装器的
 更新/支持链接，都从根 `Cargo.toml` 的 `workspace.package.repository` 获取仓库身份。
 更新校验没有关闭，不会回退下载上游资产。
+缓存的待安装计划也记录仓库来源：上游或来源缺失的旧计划会失效，重新从本 fork 下载，
+不能通过「下次启动安装」或提权安装把客户端切回上游。
 
 ## 构建
 

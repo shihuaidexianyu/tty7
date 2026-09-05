@@ -1378,6 +1378,11 @@ const PLAN_VERSION: u32 = 2;
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct PendingUpdate {
     pub version: String,
+    /// Persist the distribution as well as the version. Plans from upstream
+    /// (including older plans without this field) cannot switch this fork back
+    /// to another repository at launch or through the elevated installer.
+    #[serde(default)]
+    repository: String,
     /// Whether the next launch installs this without asking. False for a
     /// package that was merely fetched ahead of time: it waits in Settings.
     #[serde(default)]
@@ -1408,10 +1413,22 @@ impl PendingUpdate {
     /// cleaner, an antivirus, or a reboot may have taken; the plan version
     /// is the other half — see [`PLAN_VERSION`].
     pub fn is_usable(&self) -> bool {
-        self.plan_version == PLAN_VERSION && self.updater.is_file() && self.stage.is_dir()
+        self.repository == distribution::REPOSITORY_URL
+            && self.plan_version == PLAN_VERSION
+            && self.updater.is_file()
+            && self.stage.is_dir()
+    }
+
+    fn check_repository(&self) -> Result<()> {
+        anyhow::ensure!(
+            self.repository == distribution::REPOSITORY_URL,
+            "the staged update belongs to a different or unknown distribution; download it again"
+        );
+        Ok(())
     }
 
     fn launch(&self) -> Result<()> {
+        self.check_repository()?;
         PreparedUpdate {
             updater: self.updater.clone(),
             command: self.command.clone(),
@@ -1479,6 +1496,7 @@ impl PendingUpdate {
     fn launch_elevated(&self) -> Result<ElevationStart> {
         use windows_sys::Win32::Foundation::ERROR_CANCELLED;
 
+        self.check_repository()?;
         let mut parts = self
             .elevated_parts()
             .context("the staged package does not describe an elevated install")?;
@@ -2168,6 +2186,7 @@ impl PreparedUpdate {
     fn into_pending(self, version: String, apply_on_launch: bool) -> PendingUpdate {
         PendingUpdate {
             version,
+            repository: distribution::REPOSITORY_URL.to_string(),
             apply_on_launch,
             plan_version: PLAN_VERSION,
             updater: self.updater,
@@ -3291,6 +3310,7 @@ mod tests {
         UpdateState {
             pending: Some(PendingUpdate {
                 version: "27.0.0".into(),
+                repository: distribution::REPOSITORY_URL.to_string(),
                 apply_on_launch: true,
                 plan_version: PLAN_VERSION,
                 updater: PathBuf::from("/tmp/tty7-updater"),
@@ -3708,6 +3728,7 @@ mod tests {
 
         let plan = |plan_version| PendingUpdate {
             version: "27.0.0".into(),
+            repository: distribution::REPOSITORY_URL.to_string(),
             apply_on_launch: true,
             plan_version,
             updater: updater.clone(),
@@ -3746,6 +3767,44 @@ mod tests {
         ));
     }
 
+    #[test]
+    fn upstream_and_legacy_cached_updates_cannot_replace_the_fork() {
+        let stage = tempfile::tempdir().unwrap();
+        let updater = stage.path().join("tty7-updater");
+        std::fs::write(&updater, b"must never be executed").unwrap();
+        let prepared = PreparedUpdate {
+            updater,
+            command: "install".into(),
+            rest: Vec::new(),
+            config_dir: None,
+            stage: stage.path().to_path_buf(),
+            needs_elevation: false,
+            expected_sha256: None,
+        };
+        let current = prepared.into_pending("99.0.0".into(), true);
+        assert_eq!(current.repository, distribution::REPOSITORY_URL);
+        assert!(current.is_usable());
+        let mut json = serde_json::to_value(&current).unwrap();
+        json.as_object_mut().unwrap().remove("repository");
+        let legacy: PendingUpdate = serde_json::from_value(json).unwrap();
+        let mut upstream = current.clone();
+        upstream.repository = "https://github.com/l0ng-ai/tty7".into();
+        for plan in [legacy, upstream] {
+            assert!(!plan.is_usable());
+            assert!(
+                plan.launch()
+                    .unwrap_err()
+                    .to_string()
+                    .contains("distribution")
+            );
+            #[cfg(target_os = "windows")]
+            assert!(plan.launch_elevated().is_err());
+        }
+        let restored: PendingUpdate =
+            serde_json::from_str(&serde_json::to_string(&current).unwrap()).unwrap();
+        assert!(restored.is_usable());
+    }
+
     #[cfg(target_os = "windows")]
     #[test]
     fn an_elevated_plan_names_every_piece_the_chain_needs() {
@@ -3753,6 +3812,7 @@ mod tests {
         let stage = PathBuf::from(r"C:\Users\someone\AppData\Local\Temp\tty7-update-x");
         let plan = |needs_elevation, expected_sha256: Option<&str>| PendingUpdate {
             version: "27.0.0".into(),
+            repository: distribution::REPOSITORY_URL.to_string(),
             apply_on_launch: false,
             plan_version: PLAN_VERSION,
             updater: stage.join("tty7-updater.exe"),
