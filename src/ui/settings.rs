@@ -6990,9 +6990,9 @@ impl Tty7App {
                             )))
                             .child(
                                 Link::new("about-github")
-                                    .href("https://github.com/l0ng-ai/tty7")
+                                    .href(tty7_core::core::distribution::REPOSITORY_URL)
                                     .text_sm()
-                                    .child("github.com/l0ng-ai/tty7"),
+                                    .child(tty7_core::core::distribution::REPOSITORY_URL),
                             ),
                     ),
             )

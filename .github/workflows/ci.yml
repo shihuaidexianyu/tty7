@@ -42,6 +42,8 @@ jobs:
         with:
           components: rustfmt
       - run: cargo fmt --check
+      - name: Test Nightly version planning
+        run: bash .github/scripts/test-nightly-version.sh
 
   # `ui::` and `terminal::` must not reach the filesystem or git
   # directly, because once a workspace can be remote those calls answer for the

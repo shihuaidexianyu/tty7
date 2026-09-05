@@ -19,6 +19,9 @@
 #ifndef VersionInfoVersion
   #error Missing /DVersionInfoVersion — this script is meant to be compiled via bundle-windows.ps1
 #endif
+#ifndef RepositoryUrl
+  #error Missing /DRepositoryUrl — this script is meant to be compiled via bundle-windows.ps1
+#endif
 
 [Setup]
 ; Never change AppId: it is how Windows ties upgrades + the uninstall entry
@@ -28,9 +31,9 @@ AppName=tty7
 AppVersion={#AppVersion}
 VersionInfoVersion={#VersionInfoVersion}
 AppPublisher=tty7 contributors
-AppPublisherURL=https://github.com/l0ng-ai/tty7
-AppSupportURL=https://github.com/l0ng-ai/tty7/issues
-AppUpdatesURL=https://github.com/l0ng-ai/tty7/releases
+AppPublisherURL={#RepositoryUrl}
+AppSupportURL={#RepositoryUrl}/issues
+AppUpdatesURL={#RepositoryUrl}/releases
 DefaultDirName={autopf}\tty7
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest

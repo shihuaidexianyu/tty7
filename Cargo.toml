@@ -3,7 +3,7 @@ name = "tty7"
 version.workspace = true
 edition = "2024"
 description = "A terminal workbench: shells, persistent sessions, SSH, coding agents — GPU-rendered on Zed's gpui, pure Rust"
-repository = "https://github.com/l0ng-ai/tty7"
+repository.workspace = true
 license = "Apache-2.0"
 readme = "README.md"
 publish = false
@@ -266,6 +266,7 @@ default-members = [".", "crates/tty7-core", "crates/tty7-server", "crates/tty7-c
 
 [workspace.package]
 edition = "2024"
+repository = "https://github.com/shihuaidexianyu/tty7"
 # The single version for all three crates — `tty7`, `tty7-core`, `tty7-server`
 # all inherit it with `version.workspace = true`. They ship together and a
 # client talking to a server of a different build has to be able to say so, so

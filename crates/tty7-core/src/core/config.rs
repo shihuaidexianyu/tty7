@@ -217,8 +217,8 @@ pub struct Config {
     #[serde(default, deserialize_with = "de_lenient")]
     pub notify_on_command_finish: NotifyMode,
     pub check_for_updates: bool,
-    /// Which release feed update checks follow. Stable by default, so an
-    /// installation only ever ends up on Nightly by asking for it.
+    /// Which release feed update checks follow. This fork defaults to Nightly;
+    /// an explicitly saved Stable preference is preserved.
     #[serde(default, deserialize_with = "de_lenient")]
     pub update_channel: UpdateChannel,
     /// Whether a found update is fetched and verified before the user asks for
@@ -473,10 +473,10 @@ pub enum NotifyMode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum UpdateChannel {
-    #[default]
     Stable,
     /// Follows the rolling `nightly` prerelease, which is rebuilt from `main`
     /// every night.
+    #[default]
     Nightly,
 }
 

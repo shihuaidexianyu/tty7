@@ -10,9 +10,9 @@
 
 <br />
 
-[![CI](https://github.com/l0ng-ai/tty7/actions/workflows/ci.yml/badge.svg)](https://github.com/l0ng-ai/tty7/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/github/v/release/l0ng-ai/tty7?label=version&color=3FDD8C)](https://github.com/l0ng-ai/tty7/releases)
-[![Platforms](https://img.shields.io/badge/platforms-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-blue)](https://github.com/l0ng-ai/tty7/releases)
+[![CI](https://github.com/shihuaidexianyu/tty7/actions/workflows/ci.yml/badge.svg)](https://github.com/shihuaidexianyu/tty7/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/github/v/release/shihuaidexianyu/tty7?include_prereleases&label=version&color=3FDD8C)](https://github.com/shihuaidexianyu/tty7/releases)
+[![Platforms](https://img.shields.io/badge/platforms-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-blue)](https://github.com/shihuaidexianyu/tty7/releases)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-join%20chat-5865F2?logo=discord&logoColor=white)](https://discord.gg/s3dethqz2V)
 
@@ -25,6 +25,12 @@
 </div>
 
 ## Why
+
+This fork is maintained on [shihuaidexianyu/tty7](https://github.com/shihuaidexianyu/tty7),
+based on [l0ng-ai/tty7](https://github.com/l0ng-ai/tty7). Download the fork's
+[Nightly](https://github.com/shihuaidexianyu/tty7/releases/tag/nightly) for desktop
+and remote-server updates from this fork. See [fork maintenance](docs/fork.md)
+for the one-time migration and build instructions.
 
 A background server owns your shells and panes — not the window. Everything
 below follows from that.
@@ -39,7 +45,7 @@ below follows from that.
 
 ## Install
 
-Native builds for macOS, Windows, and Linux on [**Releases**](https://github.com/l0ng-ai/tty7/releases):
+Native builds for macOS, Windows, and Linux on [**Releases**](https://github.com/shihuaidexianyu/tty7/releases):
 
 | | | |
 |---|---|---|
@@ -110,7 +116,7 @@ documented in [skills/tty7/SKILL.md](skills/tty7/SKILL.md).
 Install the skill with:
 
 ```sh
-npx skills add l0ng-ai/tty7    # install
+npx skills add shihuaidexianyu/tty7    # install
 npx skills update tty7         # update later
 ```
 

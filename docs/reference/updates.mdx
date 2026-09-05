@@ -6,6 +6,17 @@ description: "How tty7 updates itself, and what the two channels mean."
 **Settings → About** is where everything lives: the version you are on, the
 channel you follow, and the button that installs what is waiting.
 
+This fork uses [shihuaidexianyu/tty7](https://github.com/shihuaidexianyu/tty7)
+for both desktop updates and remote-server downloads. Its release identity is
+defined once in `workspace.package.repository` in the root `Cargo.toml`.
+The upstream project and dependency sources retain their original attribution.
+
+For the first migration from an upstream binary, install this fork's
+[Nightly package](https://github.com/shihuaidexianyu/tty7/releases/tag/nightly)
+manually. An already installed upstream binary still contains the upstream
+update address. Existing explicit channel preferences are preserved: select
+**Nightly** in Settings if your old configuration selected **Stable**.
+
 ## How it works
 
 <Steps>
@@ -37,8 +48,8 @@ Declining an update defers it rather than retiring it; it comes back later.
 
 | | |
 |---|---|
-| **Stable** *(default)* | Published releases. Reads `/releases/latest`, which excludes prereleases. |
-| **Nightly** | Rebuilt from the latest code every night — newer, but not release-tested. Reads the rolling `nightly` tag. |
+| **Stable** | Published stable releases in this fork. Reads `/releases/latest`, which excludes prereleases; unavailable until this fork publishes a stable release. |
+| **Nightly** *(fork default)* | Rebuilt from this fork's `main` every night. Reads the rolling `nightly` tag. |
 
 The channel is a property of your **installation**, not something inferred from
 how version numbers sort. Neither feed can hand the other an update, so a

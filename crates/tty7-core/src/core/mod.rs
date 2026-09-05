@@ -4,6 +4,7 @@ pub mod clipboard;
 pub mod codename;
 pub mod config;
 pub mod crash;
+pub mod distribution;
 pub mod git;
 pub mod gitignore;
 #[allow(dead_code)]

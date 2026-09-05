@@ -10,9 +10,9 @@
 
 <br />
 
-[![CI](https://github.com/l0ng-ai/tty7/actions/workflows/ci.yml/badge.svg)](https://github.com/l0ng-ai/tty7/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/github/v/release/l0ng-ai/tty7?label=version&color=3FDD8C)](https://github.com/l0ng-ai/tty7/releases)
-[![Platforms](https://img.shields.io/badge/platforms-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-blue)](https://github.com/l0ng-ai/tty7/releases)
+[![CI](https://github.com/shihuaidexianyu/tty7/actions/workflows/ci.yml/badge.svg)](https://github.com/shihuaidexianyu/tty7/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/github/v/release/shihuaidexianyu/tty7?include_prereleases&label=version&color=3FDD8C)](https://github.com/shihuaidexianyu/tty7/releases)
+[![Platforms](https://img.shields.io/badge/platforms-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-blue)](https://github.com/shihuaidexianyu/tty7/releases)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-%E5%8A%A0%E5%85%A5%E8%AE%A8%E8%AE%BA-5865F2?logo=discord&logoColor=white)](https://discord.gg/s3dethqz2V)
 
@@ -23,6 +23,11 @@
 <img src="assets/hero.webp" alt="tty7 侧边栏列出多个仓库的 agent 会话，右侧运行 Claude Code" width="900" />
 
 </div>
+
+本 fork 以 [shihuaidexianyu/tty7](https://github.com/shihuaidexianyu/tty7) 的 `main` 为主线，
+基于 [l0ng-ai/tty7](https://github.com/l0ng-ai/tty7)。客户端更新和远端服务器下载均来自本 fork。
+下载 [Nightly](https://github.com/shihuaidexianyu/tty7/releases/tag/nightly)，首次迁移与构建方式见
+[fork 维护说明](docs/fork.md)。
 
 ## 为什么
 
@@ -38,7 +43,7 @@
 
 ## 安装
 
-macOS、Windows、Linux 的原生构建都在 [**Releases**](https://github.com/l0ng-ai/tty7/releases)：
+macOS、Windows、Linux 的原生构建都在 [**Releases**](https://github.com/shihuaidexianyu/tty7/releases)：
 
 | | | |
 |---|---|---|
@@ -106,7 +111,7 @@ agent 如何调用这套 CLI，另见 [skills/tty7/SKILL.md](skills/tty7/SKILL.m
 安装 skill：
 
 ```sh
-npx skills add l0ng-ai/tty7    # 安装
+npx skills add shihuaidexianyu/tty7    # 安装
 npx skills update tty7         # 后续更新
 ```
 

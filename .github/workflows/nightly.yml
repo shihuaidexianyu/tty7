@@ -54,10 +54,12 @@ jobs:
           # offers to the people who took the morning build. Still one numeric
           # identifier, which is what `parse_version` orders nightlies by — it
           # compares them all, so this stays sound if a segment is ever added.
-          LAST=$(git tag -l 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
-          BASE=${LAST#v}
-          NEXT="${BASE%.*}.$(( ${BASE##*.} + 1 ))"
-          VERSION="${NEXT}-nightly.$(date -u +%Y%m%d%H%M)"
+          # A new fork need not have any standard stable tags. Consume the
+          # complete tag list (no pipefail/SIGPIPE race) and use the manifest
+          # version as a floor, including when its release train moved ahead.
+          LAST=$(git tag -l 'v*' --sort=-v:refname | awk '/^v[0-9]+\.[0-9]+\.[0-9]+$/ && !found { print; found = 1 }')
+          MANIFEST=$(sed -nE 's/^version = "([^"]+)"/\1/p' Cargo.toml)
+          VERSION=$(bash .github/scripts/nightly-version.sh "$MANIFEST" "$LAST")
           echo "building $VERSION from ${GITHUB_SHA::7}"
           echo "build=true" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
@@ -209,10 +211,8 @@ jobs:
         shell: pwsh
         run: '& ./.github/scripts/bundle-windows.ps1 "${{ matrix.target }}" "${{ matrix.arch }}"'
 
-      # Nightly builds the same packages as release.yml, so it gets the same
-      # check. Nightly is not an update channel — nobody updates *into* these
-      # artifacts — but a marker or version regression shows up here a night
-      # before it would reach a stable release.
+      # Nightly is an update channel too, so its packages must satisfy the same
+      # marker/version contract as release.yml before they can be published.
       - name: Verify Windows update package
         if: matrix.os == 'windows'
         working-directory: tty7

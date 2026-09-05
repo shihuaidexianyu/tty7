@@ -14,7 +14,7 @@ use tty7_core::daemon::install::AssetFetcher as _;
 use crate::core::config::{Config, UpdateChannel};
 use crate::ui::i18n::{L10nKey, t, t_fmt};
 
-const REPO: &str = "l0ng-ai/tty7";
+use tty7_core::core::distribution;
 
 /// The rolling prerelease the Nightly channel follows. Force-moved to a new
 /// commit every night, which is exactly why it cannot double as a version.
@@ -24,13 +24,13 @@ const NIGHTLY_TAG: &str = "nightly";
 /// inferred. See `resolve_version`.
 const NIGHTLY_MANIFEST: &str = "nightly.json";
 
-pub const RELEASES_URL: &str = "https://github.com/l0ng-ai/tty7/releases/latest";
+pub const RELEASES_URL: &str = distribution::STABLE_RELEASE_URL;
 
 /// The nightly release's own page. Unlike Stable's, this URL is stable across
 /// nights — the tag stays put even as the commit under it moves. Spelled out
 /// rather than built from `NIGHTLY_TAG`, which `concat!` cannot take; the tail
 /// is asserted against it in `each_channel_reads_its_own_feed` instead.
-pub const NIGHTLY_RELEASE_URL: &str = "https://github.com/l0ng-ai/tty7/releases/tag/nightly";
+pub const NIGHTLY_RELEASE_URL: &str = distribution::NIGHTLY_RELEASE_URL;
 
 const CHECK_TIMEOUT: Duration = Duration::from_secs(15);
 
@@ -1789,10 +1789,8 @@ fn release_endpoint(channel: UpdateChannel) -> String {
     match channel {
         // Excludes prereleases by definition, so Stable can never be offered a
         // nightly even though both live in the same repository.
-        UpdateChannel::Stable => format!("https://api.github.com/repos/{REPO}/releases/latest"),
-        UpdateChannel::Nightly => {
-            format!("https://api.github.com/repos/{REPO}/releases/tags/{NIGHTLY_TAG}")
-        }
+        UpdateChannel::Stable => distribution::release_api_url("latest"),
+        UpdateChannel::Nightly => distribution::release_api_url(&format!("tags/{NIGHTLY_TAG}")),
     }
 }
 
@@ -3159,6 +3157,14 @@ mod tests {
     /// feeds cannot see each other's builds.
     #[test]
     fn each_channel_reads_its_own_feed() {
+        assert_eq!(
+            release_endpoint(UpdateChannel::Stable),
+            "https://api.github.com/repos/shihuaidexianyu/tty7/releases/latest"
+        );
+        assert_eq!(
+            release_endpoint(UpdateChannel::Nightly),
+            "https://api.github.com/repos/shihuaidexianyu/tty7/releases/tags/nightly"
+        );
         assert!(release_endpoint(UpdateChannel::Stable).ends_with("/releases/latest"));
         assert!(
             release_endpoint(UpdateChannel::Nightly)

@@ -16,6 +16,7 @@ $ErrorActionPreference = 'Stop'
 $Target = $args[0]
 $Arch   = $args[1]
 $Version = (Select-String -Path Cargo.toml -Pattern '^version\s*=\s*"([^"]+)"').Matches[0].Groups[1].Value
+$RepositoryUrl = (Select-String -Path Cargo.toml -Pattern '^repository\s*=\s*"([^"]+)"').Matches[0].Groups[1].Value
 # Inno accepts the full semantic version for AppVersion, but the PE version
 # resource only accepts numeric components. Keep both values so Nightly and
 # other prerelease builds retain their display version without breaking ISCC.
@@ -101,6 +102,7 @@ if (-not $Iscc) { $Iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" }
 & $Iscc `
     "/DAppVersion=$Version" `
     "/DVersionInfoVersion=$VersionInfoVersion" `
+    "/DRepositoryUrl=$RepositoryUrl" `
     "/DStageDir=$((Resolve-Path $Stage).Path)" `
     "/DOutputDir=$((Resolve-Path dist).Path)" `
     "/DOutputName=$Name-setup" `
